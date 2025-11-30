@@ -2,25 +2,50 @@
 
 body {
   font-family: 'Vazirmatn', sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  margin: 0;
+  padding: 0;
   direction: rtl;
-  padding: 30px;
-  max-width: 600px;
-  margin: auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-h2 {
-  color: #2c3e50;
-  margin-bottom: 20px;
+.container {
+  width: 90%;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 20px;
   text-align: center;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.logo {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+h1, h2 {
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+p {
+  color: #eee;
+  margin-bottom: 30px;
 }
 
 label {
   display: block;
-  margin-top: 15px;
+  margin: 10px 0 5px;
+  color: #fff;
   font-weight: bold;
 }
 
@@ -28,38 +53,46 @@ input[type="text"],
 input[type="number"] {
   width: 100%;
   padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.3);
+  color: #000;
   font-size: 16px;
 }
 
-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
+button, .btn {
+  background: rgba(255, 255, 255, 0.4);
   border: none;
-  border-radius: 6px;
+  padding: 10px 20px;
+  border-radius: 12px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  color: #000;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-button:hover {
-  background-color: #2980b9;
+button:hover, .btn:hover {
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
 }
 
 .result {
-  margin-top: 30px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  margin-top: 20px;
+  color: #fff;
 }
 
-.result strong {
-  color: #2c3e50;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 10px;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
 }

@@ -3,85 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subnet Calculator | NovinNetworkTools</title>
+  <title>Subnet Calculator | NNT</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .calculator { max-width: 600px; margin: 40px auto; padding: 30px; background: rgba(255,255,255,0.05); border-radius: 16px; border: 1px solid rgba(0,242,255,0.3); }
-    input, button { padding: 14px; margin: 10px 0; width: 100%; border-radius: 10px; font-family: 'Vazirmatn', sans-serif; font-size: 1.1rem; }
-    input { background: rgba(255,255,255,0.1); border: none; color: #e0e0e0; }
-    button { background: linear-gradient(to right, #00f2ff, #ff00c8); color: white; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,242,255,0.4); }
-    .result { margin-top: 30px; padding: 25px; background: rgba(0,242,255,0.1); border-radius: 12px; display: none; }
-    table { width: 100%; margin-top: 15px; }
-    td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    td:first-child { color: #00f2ff; font-weight: bold; }
-    .back { text-align: center; margin-top: 30px; }
+    .calc{max-width:600px;margin:40px auto;padding:30px;background:rgba(255,255,255,0.05);border-radius:16px;border:1px solid rgba(0,242,255,0.3);}
+    input,button{padding:14px;margin:8px 0;width:100%;border-radius:10px;font-family:'Vazirmatn',sans-serif;font-size:1.1rem;border:none;}
+    input{background:rgba(255,255,255,0.1);color:#e0e0e0;}
+    button{background:linear-gradient(to right,#00f2ff,#ff00c8);color:white;cursor:pointer;font-weight:bold;}
+    button:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,242,255,0.4);}
+    .result{display:none;margin-top:20px;padding:20px;background:rgba(0,242,255,0.1);border-radius:12px;}
+    td{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
+    td:first-child{color:#00f2ff;font-weight:bold;}
   </style>
 </head>
 <body>
   <header class="logo-header">
-    <a href="index.html"><img src="logo.png" alt="NovinNetworkTools" class="logo"></a>
+    <a href="index.html"><img src="logo.png" alt="NNT" class="logo"></a>
   </header>
 
-  <div class="calculator">
+  <div class="calc">
     <h2>ماشین حساب سابنت</h2>
-    <input type="text" id="ip" placeholder="آدرس IP (مثال: 192.168.1.1)" value="192.168.1.1">
-    <input type="number" id="mask" min="1" max="32" value="24" placeholder="ماسک CIDR">
-    <button onclick="calculate()">محاسبه کن</button>
+    <input type="text" id="ip" placeholder="IP (مثال: 192.168.1.1)" value="192.168.1.50">
+    <input type="number" id="mask" min="1" max="32" value="24">
+    <button onclick="calc()">محاسبه کن</button>
 
-    <div class="result" id="result">
-      <h3>نتیجه محاسبه:</h3>
+    <div class="result" id="res">
       <table>
-        <tr><td>آدرس شبکه</td><td id="network"></td></tr>
-        <tr><td>ماسک سابنت</td><td id="subnetmask"></td></tr>
-        <tr><td>آدرس Broadcast</td><td id="broadcast"></td></tr>
-        <tr><td>اولین هاست</td><td id="firsthost"></td></tr>
-        <tr><td>آخرین هاست</td><td id="lasthost"></td></tr>
-        <tr><td>تعداد هاست قابل استفاده</td><td id="hosts"></td></tr>
+        <tr><td>آدرس شبکه</td><td id="net"></td></tr>
+        <tr><td>ماسک</td><td id="sm"></td></tr>
+        <tr><td>Broadcast</td><td id="bc"></td></tr>
+        <tr><td>اولین هاست</td><td id="fh"></td></tr>
+        <tr><td>آخرین هاست</td><td id="lh"></td></tr>
+        <tr><td>تعداد هاست</td><td id="num"></td></tr>
       </table>
-      <div class="back"><a href="index.html">← برگشت به صفحه اصلی</a></div>
     </div>
   </div>
 
-  <script>
-    function calculate() {
-      const ipInput = document.getElementById('ip').value.trim();
-      const cidr = parseInt(document.getElementById('mask').value);
-
-      const octets = ipInput.split('.').map(Number);
-      if (octets.length !== 4  octets.some(o => isNaN(o)  o < 0 || o > 255)) {
-        alert("آدرس IP معتبر نیست! مثال: 192.168.1.1");
-        return;
-      }
-      if (isNaN(cidr)  cidr < 1  cidr > 32) {
-        alert("ماسک CIDR باید بین ۱ تا ۳۲ باشه!");
-        return;
-      }
-
-      const mask = ~(0xffffffff >> cidr) & 0xffffffff;
-      const network = octets.map((o, i) => (o & (mask >>> (24 - i * 8))) >>> 0);
-      const broadcast = network.map((n, i) => n | (~(mask >>> (24 - i * 8)) & 0xff));
-      const totalHosts = Math.pow(2, 32 - cidr) - 2;
-      const usableHosts = totalHosts > 0 ? totalHosts : 0;
-      const firstHost = [...network]; if (usableHosts > 0) firstHost[3] += 1;
-      const lastHost = [...broadcast]; if (usableHosts > 0) lastHost[3] -= 1;
-
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('network').textContent = network.join('.');
-      document.getElementById('subnetmask').textContent = / ${cidr} → ${cidrToMask(cidr)};
-      document.getElementById('broadcast').textContent = broadcast.join('.');
-      document.getElementById('firsthost').textContent = firstHost.join('.');
-      document.getElementById('lasthost').textContent = lastHost.join('.');
-      document.getElementById('hosts').textContent = usableHosts.toLocaleString();
-    }
-
-    function cidrToMask(c) {
-      let mask = 0;
-      for (let i = 0; i < c; i++) mask |= (1 << (31 - i));
-      const bytes = [];
-      for (let i = 0; i < 4; i++) bytes.push((mask >>> (24 - i * 8)) & 0xff);
-      return bytes.join('.');
-    }
-  </script>
+<script>
+function calc(){
+  let ip=document.getElementById("ip").value.trim();
+  let cidr=parseInt(document.getElementById("mask").value);
+  let o=ip.split('.').map(Number);
+  if(o.length!=4||o.some(x=>x<0||x>255||isNaN(x))||cidr<1||cidr>32){alert("اطلاعات اشتباهه!");return;}
+  let mask=~(0xffffffff>>cidr)&0xffffffff;
+  let net=o.map((x,i)=>(x&(mask>>>(24-i*8)))>>>0);
+  let bc=net.map((x,i)=>x|(~(mask>>>(24-i*8))&0xff));
+  let hosts=Math.pow(2,32-cidr)-2;
+  if(hosts<0)hosts=0;
+  let first=[...net]; if(hosts>0)first[3]++;
+  let last=[...bc]; if(hosts>0)last[3]--;
+  document.getElementById("res").style.display="block";
+  document.getElementById("net").innerText=net.join('.');
+  document.getElementById("sm").innerText="/"+cidr+" → "+[(mask>>>24)&255,(mask>>>16)&255,(mask>>>8)&255,mask&255].join('.');
+  document.getElementById("bc").innerText=bc.join('.');
+  document.getElementById("fh").innerText=first.join('.');
+  document.getElementById("lh").innerText=last.join('.');
+  document.getElementById("num").innerText=hosts.toLocaleString();
+}
+</script>
 </body>
 </html>

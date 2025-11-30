@@ -1,65 +1,53 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subnet Calculator | NNT</title>
-  <link rel="stylesheet" href="style.css">
+  <title>محاسبه Subnet</title>
   <style>
-    .calc{max-width:600px;margin:40px auto;padding:30px;background:rgba(255,255,255,0.05);border-radius:16px;border:1px solid rgba(0,242,255,0.3);}
-    input,button{padding:14px;margin:8px 0;width:100%;border-radius:10px;font-family:'Vazirmatn',sans-serif;font-size:1.1rem;border:none;}
-    input{background:rgba(255,255,255,0.1);color:#e0e0e0;}
-    button{background:linear-gradient(to right,#00f2ff,#ff00c8);color:white;cursor:pointer;font-weight:bold;}
-    button:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,242,255,0.4);}
-    .result{display:none;margin-top:20px;padding:20px;background:rgba(0,242,255,0.1);border-radius:12px;}
-    td{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
-    td:first-child{color:#00f2ff;font-weight:bold;}
+    body { font-family: sans-serif; direction: rtl; padding: 20px; }
+    input, button { margin: 5px; padding: 5px; }
+    .result { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <header class="logo-header">
-    <a href="index.html"><img src="logo.png" alt="NNT" class="logo"></a>
-  </header>
+  <h2>محاسبه‌گر Subnet</h2>
+  <label>IP آدرس:</label>
+  <input type="text" id="ip" value="192.168.2.30"><br>
+  <label>Subnet Mask (CIDR):</label>
+  <input type="number" id="cidr" value="24" min="1" max="32"><br>
+  <button onclick="calculate()">محاسبه کن</button>
 
-  <div class="calc">
-    <h2>ماشین حساب سابنت</h2>
-    <input type="text" id="ip" placeholder="IP (مثال: 192.168.1.1)" value="192.168.1.50">
-    <input type="number" id="mask" min="1" max="32" value="24">
-    <button onclick="calc()">محاسبه کن</button>
+  <div class="result" id="output"></div>
 
-    <div class="result" id="res">
-      <table>
-        <tr><td>آدرس شبکه</td><td id="net"></td></tr>
-        <tr><td>ماسک</td><td id="sm"></td></tr>
-        <tr><td>Broadcast</td><td id="bc"></td></tr>
-        <tr><td>اولین هاست</td><td id="fh"></td></tr>
-        <tr><td>آخرین هاست</td><td id="lh"></td></tr>
-        <tr><td>تعداد هاست</td><td id="num"></td></tr>
-      </table>
-    </div>
-  </div>
+  <script>
+    function ipToInt(ip) {
+      return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet), 0);
+    }
 
-<script>
-function calc(){
-  let ip=document.getElementById("ip").value.trim();
-  let cidr=parseInt(document.getElementById("mask").value);
-  let o=ip.split('.').map(Number);
-  if(o.length!=4||o.some(x=>x<0||x>255||isNaN(x))||cidr<1||cidr>32){alert("اطلاعات اشتباهه!");return;}
-  let mask=~(0xffffffff>>cidr)&0xffffffff;
-  let net=o.map((x,i)=>(x&(mask>>>(24-i*8)))>>>0);
-  let bc=net.map((x,i)=>x|(~(mask>>>(24-i*8))&0xff));
-  let hosts=Math.pow(2,32-cidr)-2;
-  if(hosts<0)hosts=0;
-  let first=[...net]; if(hosts>0)first[3]++;
-  let last=[...bc]; if(hosts>0)last[3]--;
-  document.getElementById("res").style.display="block";
-  document.getElementById("net").innerText=net.join('.');
-  document.getElementById("sm").innerText="/"+cidr+" → "+[(mask>>>24)&255,(mask>>>16)&255,(mask>>>8)&255,mask&255].join('.');
-  document.getElementById("bc").innerText=bc.join('.');
-  document.getElementById("fh").innerText=first.join('.');
-  document.getElementById("lh").innerText=last.join('.');
-  document.getElementById("num").innerText=hosts.toLocaleString();
-}
-</script>
+    function intToIp(int) {
+      return [(int >>> 24) & 255, (int >>> 16) & 255, (int >>> 8) & 255, int & 255].join('.');
+    }
+
+    function calculate() {
+      const ip = document.getElementById("ip").value;
+      const cidr = parseInt(document.getElementById("cidr").value);
+      const ipInt = ipToInt(ip);
+      const mask = cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
+      const network = ipInt & mask;
+      const broadcast = network | (~mask >>> 0);
+      const firstHost = cidr === 32 ? network : network + 1;
+      const lastHost = cidr >= 31 ? broadcast : broadcast - 1;
+      const hostCount = cidr >= 31 ? 0 : lastHost - firstHost + 1;
+
+      document.getElementById("output").innerHTML = `
+        <strong>آدرس شبکه:</strong> ${intToIp(network)}<br>
+        <strong>ماسک:</strong> ${intToIp(mask)} /${cidr}<br>
+        <strong>Broadcast:</strong> ${intToIp(broadcast)}<br>
+        <strong>اولین هاست:</strong> ${intToIp(firstHost)}<br>
+        <strong>آخرین هاست:</strong> ${intToIp(lastHost)}<br>
+        <strong>تعداد هاست:</strong> ${hostCount}
+      `;
+    }
+  </script>
 </body>
 </html>

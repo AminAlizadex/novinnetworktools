@@ -8,7 +8,7 @@
   <link rel="icon" href="logo.png" type="image/png">
 </head>
 <body>
-  <!-- هدر با تم سوئیچ و سرچ -->
+
   <header>
     <div class="container">
       <div class="header-left">
@@ -16,71 +16,56 @@
         <h1>Novin Network Tools</h1>
       </div>
       <div class="header-right">
-        <input type="text" id="search" placeholder="جستجو ابزار...">
-        <button id="theme-toggle" aria-label="تغییر تم">تغییر تم</button>
+        <input type="text" id="search" placeholder="جستجوی ابزار...">
+        <button id="theme-toggle">تغییر تم</button>
       </div>
     </div>
   </header>
 
-  <!-- صفحه اصلی -->
   <main class="container">
-    <div class="hero glass">
-      <h2>ابزارهای شبکه نوین</h2>
-      <p class="subtitle">تمام ابزارهایی که یه شبکه‌کار از CCNA تا CCIE نیاز داره – سریع، رایگان و فارسی</p>
-    </div>
+    <section class="hero">
+      <h2>تمام ابزارهای شبکه در یک جا</h2>
+      <p>سریع • رایگان • فارسی • بدون تبلیغات</p>
+    </section>
 
-    <!-- گرید ابزارها -->
     <section class="tools-grid">
-      <a href="subnet.html" class="tool-card glass">
+
+      <a href="subnet.html" class="card">
         <span class="icon">شبکه</span>
-        <h3>محاسبه‌گر Subnet</h3>
+        <h3>محاسبه‌گر سابنت</h3>
         <p>IPv4 • IPv6 • VLSM • CIDR • Wildcard</p>
       </a>
 
-      <a href="ip-calculator.html" class="tool-card glass">
+      <a href="ip-calculator.html" class="card">
         <span class="icon">آی‌پی</span>
         <h3>محاسبه‌گر IP</h3>
-        <p>تبدیل باینری، هگز، دسیمال + چک Private/Public</p>
+        <p>تبدیل باینری، دسیمال، هگز + چک Private/Public</p>
       </a>
 
-      <a href="cisco-password.html" class="tool-card glass">
+      <a href="cisco-password.html" class="card">
         <span class="icon">سیسکو</span>
         <h3>رمزنگاری سیسکو</h3>
         <p>Type 7 Decoder • Type 5/8/9 Generator</p>
       </a>
 
-      <a href="cable.html" class="tool-card glass">
+      <a href="cable.html" class="card">
         <span class="icon">کابل</span>
-        <h3>پین‌اوت کابل</h3>
-        <p>Straight • Crossover • T568A/B • Serial</p>
+        <h3>پین‌اوت کابل شبکه</h3>
+        <p>Straight • Cross • T568A/B • Serial</p>
       </a>
 
-      <a href="port-lookup.html" class="tool-card glass">
+      <a href="port-lookup.html" class="card">
         <span class="icon">پورت</span>
-        <h3>جستجوی پورت</h3>
-        <p>TCP/UDP • Well-known ports</p>
+        <h3>جستجوی پورت و پروتکل</h3>
+        <p>TCP/UDP • Well-known • IANA</p>
       </a>
 
-      <a href="wireless.html" class="tool-card glass">
+      <a href="wireless.html" class="card">
         <span class="icon">وایرلس</span>
         <h3>ابزارهای وایرلس</h3>
-        <p>dBm ↔ mW • کانال‌های غیرتداخلی</p>
+        <p>dBm ↔ mW • کانال‌های بدون تداخل</p>
       </a>
 
-      <a href="cheatsheet.html" class="tool-card glass">
+      <a href="cheatsheet.html" class="card">
         <span class="icon">یادداشت</span>
-        <h3>چیپ‌شیت‌ها</h3>
-        <p>دستورات CCNA/CCNP • Administrative Distance</p>
-      </a>
-
-      <a href="ping.html" class="tool-card glass">
-        <span class="icon">پینگ</span>
-        <h3>Ping & Traceroute</h3>
-        <p>آنلاین و سریع (IPv4/IPv6)</p>
-      </a>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>&
+        <h3>چیپ‌شیت CC

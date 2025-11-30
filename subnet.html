@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="fa">
-<head> <link rel="stylesheet" href="style.css">
+<head>
   <meta charset="UTF-8">
-  <title>محاسبه Subnet</title>
-  <style>
-    body { font-family: sans-serif; direction: rtl; padding: 20px; }
-    input, button { margin: 5px; padding: 5px; }
-    .result { margin-top: 20px; }
-  </style>
+  <title>محاسبه‌گر Subnet</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>محاسبه‌گر Subnet</h2>
-  <label>IP آدرس:</label>
-  <input type="text" id="ip" value="192.168.2.30"><br>
-  <label>Subnet Mask (CIDR):</label>
-  <input type="number" id="cidr" value="24" min="1" max="32"><br>
-  <button onclick="calculate()">محاسبه کن</button>
-
-  <div class="result" id="output"></div>
+  <div class="container glass">
+    <img src="logo.png" alt="لوگو" class="logo">
+    <h2>محاسبه‌گر Subnet</h2>
+    <label>IP آدرس:</label>
+    <input type="text" id="ip" value="192.168.2.30">
+    <label>Subnet Mask (CIDR):</label>
+    <input type="number" id="cidr" value="24" min="1" max="32">
+    <button onclick="calculate()">محاسبه کن</button>
+    <div class="result" id="output"></div>
+  </div>
 
   <script>
     function ipToInt(ip) {
@@ -40,12 +38,15 @@
       const hostCount = cidr >= 31 ? 0 : lastHost - firstHost + 1;
 
       document.getElementById("output").innerHTML = `
-        <strong>آدرس شبکه:</strong> ${intToIp(network)}<br>
-        <strong>ماسک:</strong> ${intToIp(mask)} /${cidr}<br>
-        <strong>Broadcast:</strong> ${intToIp(broadcast)}<br>
-        <strong>اولین هاست:</strong> ${intToIp(firstHost)}<br>
-        <strong>آخرین هاست:</strong> ${intToIp(lastHost)}<br>
-        <strong>تعداد هاست:</strong> ${hostCount}
+        <table>
+          <tr><th>پارامتر</th><th>مقدار</th></tr>
+          <tr><td>آدرس شبکه</td><td>${intToIp(network)}</td></tr>
+          <tr><td>ماسک</td><td>${intToIp(mask)} /${cidr}</td></tr>
+          <tr><td>Broadcast</td><td>${intToIp(broadcast)}</td></tr>
+          <tr><td>اولین هاست</td><td>${intToIp(firstHost)}</td></tr>
+          <tr><td>آخرین هاست</td><td>${intToIp(lastHost)}</td></tr>
+          <tr><td>تعداد هاست</td><td>${hostCount}</td></tr>
+        </table>
       `;
     }
   </script>

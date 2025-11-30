@@ -1,73 +1,44 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subnet Calculator | NovinNetworkTools</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .calculator { max-width: 600px; margin: 40px auto; padding: 30px; background: rgba(255,255,255,0.05); border-radius: 16px; border: 1px solid rgba(0,242,255,0.3); }
-    input, button { padding: 14px; margin: 10px 0; width: 100%; border-radius: 10px; font-family: 'Vazirmatn', sans-serif; font-size: 1.1rem; }
-    input { background: rgba(255,255,255,0.1); border: none; color: #e0e0e0; }
-    button { background: linear-gradient(to right, #00f2ff, #ff00c8); color: white; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,242,255,0.4); }
-    .result { margin-top: 30px; padding: 25px; background: rgba(0,242,255,0.1); border-radius: 12px; display: none; }
-    table { width: 100%; margin-top: 15px; }
-    td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    td:first-child { color: #00f2ff; font-weight: bold; }
-    .back { text-align: center; margin-top: 30px; }
-  </style>
-</head>
-<body>
-  <header class="logo-header">
-    <a href="index.html"><img src="logo.png" alt="NovinNetworkTools" class="logo"></a>
-  </header>
+<script>
+  function calculate() {
+    const ipInput = document.getElementById('ip').value.trim();
+    const cidr = parseInt(document.getElementById('mask').value);
 
-  <div class="calculator">
-    <h2>ماشین حساب سابنت</h2>
-    <input type="text" id="ip" placeholder="آدرس IP (مثال: 192.168.1.100)" value="192.168.1.100">
-    <input type="number" id="mask" min="1" max="32" value="24" placeholder="ماسک CIDR">
-    <button onclick="calculate()">محاسبه کن</button>
-
-    <div class="result" id="result">
-      <h3>نتیجه محاسبه:</h3>
-      <table>
-        <tr><td>آدرس شبکه</td><td id="network"></td></tr>
-        <tr><td>ماسک سابنت</td><td id="subnetmask"></td></tr>
-        <tr><td>آدرس Broadcast</td><td id="broadcast"></td></tr>
-        <tr><td>اولین هاست</td><td id="firsthost"></td></tr>
-        <tr><td>آخرین هاست</td><td id="lasthost"></td></tr>
-        <tr><td>تعداد هاست قابل استفاده</td><td id="hosts"></td></tr>
-      </table>
-      <div class="back"><a href="index.html">← برگشت به صفحه اصلی</a></div>
-    </div>
-  </div>
-
-  <script>
-    function calculate() {
-      const ip = document.getElementById('ip').value.trim();
-      const cidr = parseInt(document.getElementById('mask').value);
-      if (!ip  cidr < 1  cidr > 32) return alert("IP یا CIDR اشتباه است!");
-
-      const octets = ip.split('.').map(Number);
-      const mask = ~(0xffffffff >> cidr) & 0xffffffff;
-      const network = octets.map((o, i) => (o & (mask >>> (8 * (3 - i)))) >>> 0);
-      const broadcast = network.map((o, i) => o | (~(mask >>> (8 * (3 - i))) & 0xff));
-      const hosts = Math.pow(2, 32 - cidr) - 2;
-      const first = hosts > 0 ? network.map((o, i) => i === 3 ? o + 1 : o) : network;
-      const last = hosts > 0 ? broadcast.map((o, i) => i === 3 ? o - 1 : o) : broadcast;
-
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('network').textContent = network.join('.');
-      document.getElementById('subnetmask').textContent = / ${cidr} → ${cidrToMask(cidr)};
-      document.getElementById('broadcast').textContent = broadcast.join('.');
-      document.getElementById('firsthost').textContent = first.join('.');
-      document.getElementById('lasthost').textContent = last.join('.');
-      document.getElementById('hosts').textContent = hosts > 0 ? hosts.toLocaleString() : "0";
+    // چک کردن IP معتبر
+    const octets = ipInput.split('.').map(Number);
+    if (octets.length !== 4  octets.some(o => isNaN(o)  o < 0 || o > 255)) {
+      alert("آدرس IP معتبر نیست! مثال: 192.168.1.1");
+      return;
     }
-    function cidrToMask(c) {
-      return [0,8,16,24].map(s => ((0xffffffff << (32-c)) >>> (8*s)) & 0xff).join('.');
+    if (isNaN(cidr)  cidr < 1  cidr > 32) {
+      alert("ماسک CIDR باید بین ۱ تا ۳۲ باشه!");
+      return;
     }
-  </script>
-</body>
-</html>
+
+    const mask = ~(0xffffffff >> cidr) & 0xffffffff;
+    const network = octets.map((o, i) => (o & (mask >>> (8 * (3 - i)))) >>> 0);
+    const broadcast = network.map((o, i) => o | (~(mask >>> (8 * (3 - i))) & 0xff));
+    const totalHosts = Math.pow(2, 32 - cidr) - 2;
+    const usableHosts = totalHosts < 0 ? 0 : totalHosts;
+
+    const firstHost = usableHosts > 0 ? network.map((o, i) => i === 3 ? o + 1 : o) : network;
+    const lastHost = usableHosts > 0 ? broadcast.map((o, i) => i === 3 ? o - 1 : o) : broadcast;
+
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('network').textContent = network.join('.');
+    document.getElementById('subnetmask').textContent = / ${cidr} → ${cidrToMask(cidr)};
+    document.getElementById('broadcast').textContent = broadcast.join('.');
+    document.getElementById('firsthost').textContent = firstHost.join('.');
+    document.getElementById('lasthost').textContent = lastHost.join('.');
+    document.getElementById('hosts').textContent = usableHosts.toLocaleString();
+  }
+
+  function cidrToMask(c) {
+    const mask = [];
+    for (let i = 0; i < 4; i++) {
+      const bits = c >= 8 ? 255 : c > 0 ? (0xff << (8 - c)) & 0xff : 0;
+      mask.push(bits);
+      c -= 8;
+    }
+    return mask.join('.');
+  }
+</script>

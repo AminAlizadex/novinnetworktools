@@ -3,17 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <title>ماشین حساب سابنت</title>
-  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(255,255,255,0.12);
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 25px rgba(0,0,0,0.4);
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 10px;
+    }
+
+    input, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    button {
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background: #1976d2;
+    }
+
+    .result {
+      margin-top: 25px;
+      overflow-x: auto;
+    }
+
+    .result table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+
+    .result th {
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 10px;
+    }
+
+    .result td {
+      padding: 9px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .result tr:last-child td {
+      border-bottom: none;
+    }
+
+    .copy-btn {
+      background: rgba(0,150,255,0.8);
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
-  <div class="container glass subnet-box">
-    <img src="logo.png" alt="لوگو" class="logo">
-    <h2>ماشین حساب سابنت</h2>
 
-    <label>IP آدرس:</label>
+  <div class="container">
+    <img src="logo.png" class="logo">
+    <h2 style="color:white;">ماشین حساب سابنت</h2>
+
     <input type="text" id="ip" value="192.168.1.50">
-
-    <label>Subnet Mask (CIDR):</label>
     <input type="number" id="cidr" value="24" min="1" max="32">
 
     <button onclick="calculate()">محاسبه کن</button>
@@ -21,110 +107,50 @@
     <div class="result" id="output"></div>
   </div>
 
-  <script>
-    function ipToInt(ip) {
-      return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet), 0);
-    }
+<script>
+function ipToInt(ip) {
+  return ip.split('.').reduce((acc, o) => (acc << 8) + parseInt(o), 0);
+}
 
-    function intToIp(int) {
-      return [(int >>> 24) & 255, (int >>> 16) & 255, (int >>> 8) & 255, int & 255].join('.');
-    }
+function intToIp(int) {
+  return [(int>>>24)&255,(int>>>16)&255,(int>>>8)&255,int&255].join('.');
+}
 
-    function isValidIp(ip) {
-      const parts = ip.split(".");
-      if (parts.length !== 4) return false;
-      return parts.every(p => {
-        const n = Number(p);
-        return n >= 0 && n <= 255;
-      });
-    }
+function copyText(txt) {
+  navigator.clipboard.writeText(txt);
+}
 
-    function copyText(text) {
-      navigator.clipboard.writeText(text);
-      alert("کپی شد ✅");
-    }
+function calculate() {
+  const ip = document.getElementById("ip").value;
+  const cidr = +document.getElementById("cidr").value;
 
-    function calculate() {
-      const ip = document.getElementById("ip").value.trim();
-      const cidr = parseInt(document.getElementById("cidr").value);
+  const mask = (~0 << (32 - cidr)) >>> 0;
+  const wildcard = (~mask) >>> 0;
 
-      if (!isValidIp(ip)) {
-        document.getElementById("output").innerHTML = "❌ IP نامعتبر است";
-        return;
-      }
+  const ipInt = ipToInt(ip);
+  const network = ipInt & mask;
+  const broadcast = network | wildcard;
 
-      if (cidr < 1 || cidr > 32) {
-        document.getElementById("output").innerHTML = "❌ CIDR باید بین 1 تا 32 باشد";
-        return;
-      }
+  const first = cidr >= 31 ? network : network + 1;
+  const last = cidr >= 31 ? broadcast : broadcast - 1;
 
-      const ipInt = ipToInt(ip);
-      const mask = cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
-      const wildcard = (~mask) >>> 0;
+  const total = 2 ** (32 - cidr);
+  const usable = cidr >= 31 ? 0 : total - 2;
 
-      const network = ipInt & mask;
-      const broadcast = network | wildcard;
+  document.getElementById("output").innerHTML = `
+  <table>
+    <tr><th>پارامتر</th><th>مقدار</th><th>کپی</th></tr>
+    <tr><td>Network</td><td>${intToIp(network)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(network)}')">📋</button></td></tr>
+    <tr><td>Subnet</td><td>${intToIp(mask)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(mask)}')">📋</button></td></tr>
+    <tr><td>Wildcard</td><td>${intToIp(wildcard)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(wildcard)}')">📋</button></td></tr>
+    <tr><td>Broadcast</td><td>${intToIp(broadcast)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(broadcast)}')">📋</button></td></tr>
+    <tr><td>First Host</td><td>${intToIp(first)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(first)}')">📋</button></td></tr>
+    <tr><td>Last Host</td><td>${intToIp(last)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(last)}')">📋</button></td></tr>
+    <tr><td>Total Hosts</td><td colspan="2">${total}</td></tr>
+    <tr><td>Usable Hosts</td><td colspan="2">${usable}</td></tr>
+  </table>`;
+}
+</script>
 
-      const firstHost = cidr >= 31 ? network : network + 1;
-      const lastHost = cidr >= 31 ? broadcast : broadcast - 1;
-
-      const totalHosts = Math.pow(2, 32 - cidr);
-      const usableHosts = cidr >= 31 ? 0 : totalHosts - 2;
-
-      document.getElementById("output").innerHTML = `
-        <table>
-          <tr><th>پارامتر</th><th>مقدار</th><th>کپی</th></tr>
-
-          <tr>
-            <td>Network Address</td>
-            <td>${intToIp(network)}</td>
-            <td><button onclick="copyText('${intToIp(network)}')">📋</button></td>
-          </tr>
-
-          <tr>
-            <td>Subnet Mask</td>
-            <td>${intToIp(mask)} /${cidr}</td>
-            <td><button onclick="copyText('${intToIp(mask)}')">📋</button></td>
-          </tr>
-
-          <tr>
-            <td>Wildcard Mask</td>
-            <td>${intToIp(wildcard)}</td>
-            <td><button onclick="copyText('${intToIp(wildcard)}')">📋</button></td>
-          </tr>
-
-          <tr>
-            <td>Broadcast</td>
-            <td>${intToIp(broadcast)}</td>
-            <td><button onclick="copyText('${intToIp(broadcast)}')">📋</button></td>
-          </tr>
-
-          <tr>
-            <td>First Host</td>
-            <td>${intToIp(firstHost)}</td>
-            <td><button onclick="copyText('${intToIp(firstHost)}')">📋</button></td>
-          </tr>
-
-          <tr>
-            <td>Last Host</td>
-            <td>${intToIp(lastHost)}</td>
-            <td><button onclick="copyText('${intToIp(lastHost)}')">📋</button></td>
-          </tr>
-
-          <tr>
-            <td>Total Hosts</td>
-            <td>${totalHosts}</td>
-            <td></td>
-          </tr>
-
-          <tr>
-            <td>Usable Hosts</td>
-            <td>${usableHosts}</td>
-            <td></td>
-          </tr>
-        </table>
-      `;
-    }
-  </script>
 </body>
 </html>

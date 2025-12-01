@@ -4,6 +4,7 @@ const savedTheme = localStorage.getItem('theme') || 'dark';
 document.documentElement.setAttribute('data-theme', savedTheme);
 toggle.textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
 
+// Toggle button
 toggle.onclick = () => {
   const current = document.documentElement.getAttribute('data-theme');
   const next = current === 'dark' ? 'light' : 'dark';

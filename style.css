@@ -77,3 +77,63 @@ footer { text-align: center; padding: 3rem; opacity: 0.7; }
   color: #000;
 }
 [data-theme="light"] #search { background: rgba(0,0,0,0.05); color: #000; }
+/* ===== Subnet Page Center & Clean Table ===== */
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 480px;
+  padding: 25px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.result {
+  margin-top: 25px;
+  overflow-x: auto;
+}
+
+.result table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.result th {
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 12px;
+}
+
+.result td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.result tr:last-child td {
+  border-bottom: none;
+}
+
+.result button {
+  background: rgba(0, 150, 255, 0.7);
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.result button:hover {
+  background: rgba(0, 150, 255, 1);
+  transform: scale(1.05);
+}

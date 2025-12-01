@@ -1,111 +1,24 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ماشین حساب سابنت</title>
-
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: sans-serif;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 500px;
-      background: rgba(255,255,255,0.12);
-      padding: 25px;
-      border-radius: 20px;
-      text-align: center;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 25px rgba(0,0,0,0.4);
-    }
-
-    .logo {
-      width: 80px;
-      margin-bottom: 10px;
-    }
-
-    input, button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      font-size: 14px;
-    }
-
-    button {
-      background: #2196f3;
-      color: white;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-
-    button:hover {
-      background: #1976d2;
-    }
-
-    .result {
-      margin-top: 25px;
-      overflow-x: auto;
-    }
-
-    .result table {
-      width: 100%;
-      border-collapse: collapse;
-      background: rgba(255,255,255,0.15);
-      border-radius: 12px;
-      overflow: hidden;
-      font-size: 14px;
-    }
-
-    .result th {
-      background: rgba(0,0,0,0.6);
-      color: white;
-      padding: 10px;
-    }
-
-    .result td {
-      padding: 9px;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-      color: white;
-    }
-
-    .result tr:last-child td {
-      border-bottom: none;
-    }
-
-    .copy-btn {
-      background: rgba(0,150,255,0.8);
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subnet Calculator | Novin Network Tools</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <div class="container">
-    <img src="logo.png" class="logo">
-    <h2 style="color:white;">ماشین حساب سابنت</h2>
+<div class="container subnet-container">
+  <img src="logo.png" class="logo" alt="Logo">
+  <h2>Subnet Calculator</h2>
 
-    <input type="text" id="ip" value="192.168.1.50">
-    <input type="number" id="cidr" value="24" min="1" max="32">
+  <input type="text" id="ip" value="192.168.1.50" placeholder="Enter IP Address">
+  <input type="number" id="cidr" value="24" min="1" max="32" placeholder="CIDR (1-32)">
 
-    <button onclick="calculate()">محاسبه کن</button>
+  <button onclick="calculate()">Calculate</button>
 
-    <div class="result" id="output"></div>
-  </div>
+  <div class="result" id="output"></div>
+</div>
 
 <script>
 function ipToInt(ip) {
@@ -126,22 +39,19 @@ function calculate() {
 
   const mask = (~0 << (32 - cidr)) >>> 0;
   const wildcard = (~mask) >>> 0;
-
   const ipInt = ipToInt(ip);
   const network = ipInt & mask;
   const broadcast = network | wildcard;
-
   const first = cidr >= 31 ? network : network + 1;
   const last = cidr >= 31 ? broadcast : broadcast - 1;
-
   const total = 2 ** (32 - cidr);
   const usable = cidr >= 31 ? 0 : total - 2;
 
   document.getElementById("output").innerHTML = `
   <table>
-    <tr><th>پارامتر</th><th>مقدار</th><th>کپی</th></tr>
+    <tr><th>Parameter</th><th>Value</th><th>Copy</th></tr>
     <tr><td>Network</td><td>${intToIp(network)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(network)}')">📋</button></td></tr>
-    <tr><td>Subnet</td><td>${intToIp(mask)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(mask)}')">📋</button></td></tr>
+    <tr><td>Subnet Mask</td><td>${intToIp(mask)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(mask)}')">📋</button></td></tr>
     <tr><td>Wildcard</td><td>${intToIp(wildcard)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(wildcard)}')">📋</button></td></tr>
     <tr><td>Broadcast</td><td>${intToIp(broadcast)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(broadcast)}')">📋</button></td></tr>
     <tr><td>First Host</td><td>${intToIp(first)}</td><td><button class="copy-btn" onclick="copyText('${intToIp(first)}')">📋</button></td></tr>
